@@ -6,16 +6,15 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: test-app-service
+  name: test-app-svc
   namespace: test-app
 spec:
   selector:
     app: test-app
   ports:
-    - name: https
-      port: 443
+    - protocol: TCP
+      port: 5006
       targetPort: 5000
-      protocol: TCP
   type: LoadBalancer
 ---
 apiVersion: apps/v1
@@ -33,11 +32,6 @@ spec:
       labels:
         app: test-app
     spec:
-      containers:
-      - name: test-app-container
-        image: davidt101/test-app:0001
-        ports:
-        - containerPort: 5000
       containers:
       - name: test-app-container
         image: davidt101/test-app:0001
