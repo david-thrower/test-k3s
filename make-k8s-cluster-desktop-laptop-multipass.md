@@ -30,3 +30,8 @@ for f in 1 2; do
     multipass exec k3s-node-$f -- bash -c "curl -sfL https://get.k3s.io | K3S_URL=\"https://$K3_IP:6443\" K3S_TOKEN=\"$K3_TOKEN\" sh -"
 done
 ```
+
+# Credits
+
+- Obviously the K3S docs
+- https://andreipope.github.io/tutorials/create-a-cluster-with-multipass-and-k3s.html

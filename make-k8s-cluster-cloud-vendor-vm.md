@@ -57,4 +57,11 @@ In each: SSH in and run:
   3. `helm repo update`
   4. `helm install traefik-mesh traefik/traefik-mesh`
 
+
+
 ## Now we have a production ready Kubernetes cluster ready to go.
+
+# Credits
+
+- Obviously the K3S docs
+- https://andreipope.github.io/tutorials/create-a-cluster-with-multipass-and-k3s.html
