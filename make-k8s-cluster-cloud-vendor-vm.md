@@ -51,13 +51,20 @@ In each: SSH in and run:
 ## Now to fortify security, we need a service mesh. **You may wan to skip this step if you plan to install a manifest that comes packaged with its own service mesh (for example Kubeflow)**
 
 1. SSH into any of the **control plane** nodes (the first ones we set up)
-2. Now run these commands. Rubber stamp anything it asks you "Are youy sure..."
+2. Now run these commands. Rubber stamp anything it asks you "Are you sure..."
   1. `sudo snap install helm --classic`
   2. `helm repo add traefik https://traefik.github.io/charts`
   3. `helm repo update`
   4. `helm install traefik-mesh traefik/traefik-mesh`
 
+## Install an app:
 
+- The deployment.yaml has an example.
+- The example is under development (needs to add a TLS cert and FQDN)
+
+# end / in progress below here #####
+
+## Add TLS and FQDN
 
 ## Now we have a production ready Kubernetes cluster ready to go.
 

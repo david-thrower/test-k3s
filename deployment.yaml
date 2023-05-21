@@ -3,25 +3,13 @@ kind: Namespace
 metadata:
   name: test-app
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: test-app-svc
-  namespace: test-app
-spec:
-  selector:
-    app: test-app
-  ports:
-    - protocol: TCP
-      port: 5006
-      targetPort: 5000
-  type: LoadBalancer
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: test-app-deployment
   namespace: test-app
+  labels:
+    app: test-app
 spec:
   selector:
     matchLabels:
@@ -33,7 +21,38 @@ spec:
         app: test-app
     spec:
       containers:
-      - name: test-app-container
-        image: davidt101/test-app:0001
+      - name: test-app
+        image: davidt101/test-app:0002
         ports:
         - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-app-service-cip
+  labels:
+    app: test-app
+  namespace: test-app
+spec:
+  type: ClusterIP
+  selector:
+    app: test-app
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: test-app-ingress
+  namespace: test-app
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host("test-app-deployment.test-app.15.204.28.54.sslip.io")
+    services:
+    - name: test-app-service-cip
+      port: 5000
