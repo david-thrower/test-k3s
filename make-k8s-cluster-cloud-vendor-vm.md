@@ -48,6 +48,70 @@ In each: SSH in and run:
 
 - `curl -sfL https://get.k3s.io | K3S_URL="https://[control plane ip]:6443" K3S_TOKEN="[token]" sh -`
 
+## Install an app:
+
+On a while logged into a control plane node on the cluster, run `nano deployment.yaml` and paste in  the contents of deployment.yaml (or clone this repo and open the file). In the file deployment.yaml: Amend this `test-app-deployment.test-app.[REPLACE-WITH-HOST-IP].sslip.io` to be "test-app-deployment.test-app.**123.123.123.123**.sslip.io" where **123.123.123.123** is a valid IP address of one of the nodes on your cluster. Then apply the resources: `kubectl apply -f deployment.yaml`.
+
+## Add TLS and FQDN
+
+`kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml`
+
+issuer.yaml
+```
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+  namespace: test-app
+spec:
+  acme:
+    # You must replace this email address with your own.
+    # Let's Encrypt will use this to contact you about expiring
+    # certificates, and issues related to your account.
+    email: david@cerebros.one
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Secret resource that will be used to store the account's private key.
+      name: example-issuer-account-key
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+
+```
+
+cert.yaml
+```
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test-app-cert
+  namespace: test-app
+spec:
+  dnsNames:
+  - 'test-app-deployment.test-app.[ADD-IP-ADDRESS].sslip.io'
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-staging
+  secretName: test-app-cert-pvc
+```
+
+patch.yaml
+```
+- op: replace
+  path: /spec/entryPoints
+  value:
+    - websecure
+- op: add
+  path: /spec/tls
+  value:
+    secretName: test-app-cert-pvc
+```
+
+`kubectl patch ingressroute test-app-ingress -n test-app --type=json --patch-file patch.yaml`
+
 ## Now to fortify security, we need a service mesh. **You may wan to skip this step if you plan to install a manifest that comes packaged with its own service mesh (for example Kubeflow)**
 
 1. SSH into any of the **control plane** nodes (the first ones we set up)
@@ -56,15 +120,6 @@ In each: SSH in and run:
   2. `helm repo add traefik https://traefik.github.io/charts`
   3. `helm repo update`
   4. `helm install traefik-mesh traefik/traefik-mesh`
-
-## Install an app:
-
-- The deployment.yaml has an example.
-- The example is under development (needs to add a TLS cert and FQDN)
-
-# end / in progress below here #####
-
-## Add TLS and FQDN
 
 ## Now we have a production ready Kubernetes cluster ready to go.
 

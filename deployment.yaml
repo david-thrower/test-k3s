@@ -52,7 +52,7 @@ spec:
   - web
   routes:
   - kind: Rule
-    match: Host("test-app-deployment.test-app.15.204.28.54.sslip.io")
+    match: Host("test-app-deployment.test-app.[REPLACE-WITH-HOST-IP].sslip.io")
     services:
     - name: test-app-service-cip
       port: 5000
