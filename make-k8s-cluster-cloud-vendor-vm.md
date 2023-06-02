@@ -54,6 +54,14 @@ In each: SSH in and run the command:
 
 - "curl -sfL https://get.k3s.io | K3S_URL="https://**[IP address]**:6443" K3S_TOKEN="**[Token]**" sh -"
 
+## Add longhorn block storage for ReadWriteMany block storage and storage backup:
+
+- Check the requirements. The Ubuntu machines have them met already. If any turn out to not be met, find the shortcut to add it with  `kubectl apply -f ...`, rather than installing them on the host OS.
+
+```
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.4.2/deploy/longhorn.yaml
+```
+
 ## Install an app:
 
 On a while logged into a control plane node on the cluster, run `nano deployment.yaml` and paste in  the contents of deployment.yaml (or clone this repo and open the file). In the file deployment.yaml: Amend this `test-app-deployment.test-app.[REPLACE-WITH-HOST-IP].sslip.io` to be "test-app-deployment.test-app.**[IP address]**.sslip.io". Then apply the resources: `kubectl apply -f deployment.yaml`.
