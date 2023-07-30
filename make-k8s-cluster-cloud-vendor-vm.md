@@ -54,6 +54,15 @@ In each: SSH in and run the command:
 
 - "curl -sfL https://get.k3s.io | K3S_URL="https://**[IP address]**:6443" K3S_TOKEN="**[Token]**" sh -"
 
+### Add ReadWriteMany storage capability:
+
+- Run: `kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/deploy/prerequisite/longhorn-iscsi-installation.yaml`
+- Run: `kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/deploy/prerequisite/longhorn-nfs-installation.yaml`
+- Run: `kubectl get pod | grep longhorn-iscsi-installation`
+- Run: `kubectl get pod | grep longhorn-nfs-installation`
+- `kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/deploy/longhorn.yaml`
+
+
 ## Install an app:
 
 On a while logged into a control plane node on the cluster, run `nano deployment.yaml` and paste in  the contents of deployment.yaml (or clone this repo and open the file). In the file deployment.yaml: Amend this `test-app-deployment.test-app.[REPLACE-WITH-HOST-IP].sslip.io` to be "test-app-deployment.test-app.**[IP address]**.sslip.io". Then apply the resources: `kubectl apply -f deployment.yaml`.
